@@ -9,6 +9,7 @@ import com.intellij.openapi.project.rootManager
 import com.intellij.psi.PsiElement
 import software.aws.toolkits.jetbrains.core.utils.buildList
 import software.aws.toolkits.jetbrains.services.PathMapping
+import software.aws.toolkits.jetbrains.services.lambda.sam.SamCommon
 import software.aws.toolkits.jetbrains.services.lambda.sam.SamOptions
 import software.aws.toolkits.jetbrains.services.lambda.sam.SamTemplateUtils
 import software.aws.toolkits.resources.message
@@ -28,7 +29,7 @@ abstract class LambdaBuilder {
     open fun getBuildDirectory(module: Module): Path {
         val contentRoot = module.rootManager.contentRoots.firstOrNull()
             ?: throw IllegalStateException(message("lambda.build.module_with_no_content_root", module.name))
-        return Paths.get(contentRoot.path, ".aws-sam", "build")
+        return Paths.get(contentRoot.path, SamCommon.SAM_BUILD_DIR, "build")
     }
 
     /**

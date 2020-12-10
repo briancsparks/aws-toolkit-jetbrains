@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import software.aws.toolkits.core.rules.EnvironmentVariableHelper
+import software.aws.toolkits.jetbrains.services.lambda.sam.SamCommon
 import software.aws.toolkits.jetbrains.services.lambda.sam.SamOptions
 import software.aws.toolkits.jetbrains.utils.rules.HeavyJavaCodeInsightTestFixtureRule
 import software.aws.toolkits.jetbrains.utils.rules.addModule
@@ -19,6 +20,7 @@ import software.aws.toolkits.jetbrains.utils.setSamExecutableFromEnvironment
 import software.aws.toolkits.jetbrains.utils.setUpGradleProject
 import software.aws.toolkits.jetbrains.utils.setUpMavenProject
 import software.aws.toolkits.resources.message
+import java.nio.file.Paths
 
 class JavaLambdaBuilderTest {
     @Rule
@@ -39,7 +41,7 @@ class JavaLambdaBuilderTest {
     }
 
     @Test
-    fun gradleRootProjectHandlerIsCorrect() {
+    fun gradleRootProjectHandlerBaseDirIsCorrect() {
         val psiClass = projectRule.setUpGradleProject()
 
         val baseDir = sut.handlerBaseDirectory(projectRule.module, psiClass.methods.first())
@@ -53,7 +55,7 @@ class JavaLambdaBuilderTest {
 
         val baseDir = sut.getBuildDirectory(projectRule.module)
         val moduleRoot = ModuleRootManagerEx.getInstanceEx(projectRule.module).contentRoots.first().path
-        assertThat(baseDir.toAbsolutePath().toString()).isEqualTo("$moduleRoot/.aws-sam/build")
+        assertThat(baseDir.toAbsolutePath()).isEqualTo(Paths.get(moduleRoot, SamCommon.SAM_BUILD_DIR, "build"))
     }
 
     @Test
@@ -71,7 +73,7 @@ class JavaLambdaBuilderTest {
 
         val baseDir = sut.getBuildDirectory(projectRule.module)
         val moduleRoot = ModuleRootManagerEx.getInstanceEx(projectRule.module).contentRoots.first().path
-        assertThat(baseDir.toAbsolutePath().toString()).isEqualTo("$moduleRoot/.aws-sam/build")
+        assertThat(baseDir.toAbsolutePath()).isEqualTo(Paths.get(moduleRoot, SamCommon.SAM_BUILD_DIR, "build"))
     }
 
     @Test
