@@ -13,6 +13,4 @@ import com.intellij.openapi.vfs.VirtualFile
  * @param virtualFile The Node.js source code file.
  * @return The inferred source root that contains package.json file
  */
-fun inferSourceRoot(virtualFile: VirtualFile): VirtualFile? {
-    return PackageJsonUtil.findUpPackageJson(virtualFile)?.parent
-}
+fun inferSourceRoot(virtualFile: VirtualFile): VirtualFile? = PackageJsonUtil.findUpPackageJson(virtualFile)?.parent
