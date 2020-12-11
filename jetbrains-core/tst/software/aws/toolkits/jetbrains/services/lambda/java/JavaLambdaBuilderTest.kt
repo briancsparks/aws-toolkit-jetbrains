@@ -46,7 +46,7 @@ class JavaLambdaBuilderTest {
 
         val baseDir = sut.handlerBaseDirectory(projectRule.module, psiClass.methods.first())
         val moduleRoot = ModuleRootManagerEx.getInstanceEx(projectRule.module).contentRoots.first().path
-        assertThat(baseDir.toAbsolutePath().toString()).isEqualTo(moduleRoot)
+        assertThat(baseDir).isEqualTo(Paths.get(moduleRoot))
     }
 
     @Test
@@ -64,7 +64,7 @@ class JavaLambdaBuilderTest {
 
         val baseDir = sut.handlerBaseDirectory(projectRule.module, psiClass.methods.first())
         val moduleRoot = ModuleRootManagerEx.getInstanceEx(projectRule.module).contentRoots.first().path
-        assertThat(baseDir.toAbsolutePath().toString()).isEqualTo(moduleRoot)
+        assertThat(baseDir).isEqualTo(Paths.get(moduleRoot))
     }
 
     @Test
