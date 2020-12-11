@@ -4,9 +4,9 @@
 package software.aws.toolkits.jetbrains.services.lambda.nodejs
 
 import com.intellij.openapi.module.ModuleType
-import com.intellij.openapi.roots.ModuleRootManagerEx
 import com.intellij.testFramework.PsiTestUtil
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,8 +39,8 @@ class NodeJsLambdaBuilderTest {
         projectRule.fixture.addPackageJsonFile("hello-world")
 
         val baseDir = sut.handlerBaseDirectory(projectRule.module, expectedHandlerFile)
-        val moduleRoot = ModuleRootManagerEx.getInstanceEx(projectRule.module).contentRoots.first().path
-        assertThat(baseDir.toAbsolutePath()).isEqualTo(Paths.get(moduleRoot, "hello-world"))
+        val root = Paths.get(projectRule.fixture.tempDirPath)
+        assertThat(baseDir.toAbsolutePath()).isEqualTo(root.resolve("hello-world"))
     }
 
     @Test
@@ -49,16 +49,17 @@ class NodeJsLambdaBuilderTest {
         projectRule.fixture.addPackageJsonFile("hello-world")
 
         val baseDir = sut.handlerBaseDirectory(projectRule.module, expectedHandlerFile)
-        val moduleRoot = ModuleRootManagerEx.getInstanceEx(projectRule.module).contentRoots.first().path
-        assertThat(baseDir.toAbsolutePath()).isEqualTo(Paths.get(moduleRoot, "hello-world"))
+        val root = Paths.get(projectRule.fixture.tempDirPath)
+        assertThat(baseDir).isEqualTo(root.resolve("hello-world"))
     }
 
     @Test
-    fun missingPackageJsonReturnsNullHandlerBaseDir() {
+    fun missingPackageJsonThrowsForHandlerBaseDir() {
         val expectedHandlerFile = projectRule.fixture.addLambdaHandler(subPath = "hello-world/foo-bar")
 
-        val baseDir = sut.handlerBaseDirectory(projectRule.module, expectedHandlerFile)
-        assertThat(baseDir).isNull()
+        assertThatThrownBy {
+            sut.handlerBaseDirectory(projectRule.module, expectedHandlerFile)
+        }.hasMessageStartingWith("Cannot locate package.json")
     }
 
     @Test
@@ -67,8 +68,8 @@ class NodeJsLambdaBuilderTest {
         projectRule.fixture.addPackageJsonFile()
 
         val baseDir = sut.handlerBaseDirectory(projectRule.module, expectedHandlerFile)
-        val moduleRoot = ModuleRootManagerEx.getInstanceEx(projectRule.module).contentRoots.first().path
-        assertThat(baseDir.toAbsolutePath()).isEqualTo(Paths.get(moduleRoot))
+        val root = Paths.get(projectRule.fixture.tempDirPath)
+        assertThat(baseDir).isEqualTo(root)
     }
 
     @Test

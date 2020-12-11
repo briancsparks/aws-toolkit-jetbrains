@@ -20,6 +20,8 @@ abstract class LambdaBuilder {
 
     /**
      * Returns the base directory of the Lambda handler
+     *
+     * @throws IllegalStateException if the handlerElement is not locatable
      */
     abstract fun handlerBaseDirectory(module: Module, handlerElement: PsiElement): Path
 
