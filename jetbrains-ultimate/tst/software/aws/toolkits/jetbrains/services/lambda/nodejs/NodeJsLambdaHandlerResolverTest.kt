@@ -38,7 +38,7 @@ class NodeJsLambdaHandlerResolverTest {
                 lambdaHandler = async (event, context) => {
                     return "Hello World"
                 }
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, null)
@@ -52,7 +52,7 @@ class NodeJsLambdaHandlerResolverTest {
                 exports.lambdaHandler = function(event) {
                     return "Hello World"
                 }
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, "app.lambdaHandler")
@@ -66,7 +66,7 @@ class NodeJsLambdaHandlerResolverTest {
                 exports.lambdaHandler = function(event, context, callback, foo) {
                     return "Hello World"
                 }
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, null)
@@ -80,7 +80,7 @@ class NodeJsLambdaHandlerResolverTest {
                 exports.lambdaHandler = async (event) => {
                     return "Hello World"
                 }
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, "app.lambdaHandler")
@@ -94,7 +94,7 @@ class NodeJsLambdaHandlerResolverTest {
                 exports.lambdaHandler = async (event, context, callback) => {
                     return "Hello World"
                 }
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, null)
@@ -108,7 +108,7 @@ class NodeJsLambdaHandlerResolverTest {
                 exports.lambdaHandler = function(event, context, callback) {
                     return "Hello World"
                 }
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, "app.lambdaHandler")
@@ -123,7 +123,7 @@ class NodeJsLambdaHandlerResolverTest {
                 exports.lambdaHandler = async (event, context) => {
                     return "Hello World"
                 }
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, "foo/bar/app.lambdaHandler")
@@ -138,7 +138,7 @@ class NodeJsLambdaHandlerResolverTest {
                 exports.lambdaHandler = async (event, context) => {
                     return "Hello World"
                 }
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, "bar/app.lambdaHandler")
@@ -150,7 +150,7 @@ class NodeJsLambdaHandlerResolverTest {
             subPath = "foo/bar",
             fileContent = """
                 exports.lambdaHandler = "foo"
-                """.trimIndent()
+            """.trimIndent()
         )
 
         assertDetermineHandler(handlerElement, null)
@@ -159,25 +159,17 @@ class NodeJsLambdaHandlerResolverTest {
     @Test
     fun findPsiElement_exportsAsync2Parameters() {
         projectRule.fixture.addPackageJsonFile()
-        val fileContent =
-            """
-            exports.lambdaHandler = async (event, context) => {
-                return "Hello World";
-            }
-            """.trimIndent()
-
-        projectRule.fixture.addFileToProject("app.js", fileContent)
+        projectRule.fixture.addLambdaHandler()
         assertFindPsiElements("app.lambdaHandler", true)
     }
 
     @Test
     fun findPsiElement_exportsAsync3Parameters() {
-        val fileContent =
-            """
+        val fileContent = """
             exports.lambdaHandler = async (event, context, callback) => {
                 return "Hello World";
             }
-            """.trimIndent()
+        """.trimIndent()
 
         projectRule.fixture.addFileToProject("app.js", fileContent)
         assertFindPsiElements("app.lambdaHandler", false)
