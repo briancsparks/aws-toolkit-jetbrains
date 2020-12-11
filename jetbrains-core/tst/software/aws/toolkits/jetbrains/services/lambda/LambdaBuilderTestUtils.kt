@@ -3,17 +3,19 @@
 
 package software.aws.toolkits.jetbrains.services.lambda
 
-object LambdaBuilderTestUtils {
-//    fun verifyPathMappings(module: Module, builtLambda: BuiltLambda, vararg mappings: Pair<String, String>) {
-//        val basePath = ModuleRootManager.getInstance(module).contentRoots[0].path
-//        val updatedPaths = mappings
-//            .map { (path, file) ->
-//                PathMapping(
-//                    path.replace("%PROJECT_ROOT%", basePath)
-//                        .replace("%BUILD_ROOT%", builtLambda.codeLocation.toString()),
-//                    file
-//                )
-//            }
-//        assertThat(builtLambda.mappings).containsAll(updatedPaths)
-//    }
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.roots.ModuleRootManager
+import org.assertj.core.api.Assertions.assertThat
+import software.aws.toolkits.jetbrains.services.PathMapping
+
+fun LambdaBuilder.verifyPathMappings(module: Module, actualMappings: List<PathMapping>, expectedMappings: List<PathMapping>) {
+    val basePath = ModuleRootManager.getInstance(module).contentRoots[0].path
+    val updatedPaths = expectedMappings
+        .map {
+            PathMapping(
+                it.localRoot.replace("%PROJECT_ROOT%", basePath),
+                it.remoteRoot
+            )
+        }
+    assertThat(actualMappings).containsAll(updatedPaths)
 }
