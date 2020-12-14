@@ -12,6 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import software.amazon.awssdk.services.lambda.model.Runtime
 import software.aws.toolkits.jetbrains.services.PathMapping
+import software.aws.toolkits.jetbrains.services.lambda.LambdaBuilder
 import software.aws.toolkits.jetbrains.services.lambda.verifyPathMappings
 import software.aws.toolkits.jetbrains.utils.rules.HeavyNodeJsCodeInsightTestFixtureRule
 import software.aws.toolkits.jetbrains.utils.rules.addLambdaHandler
@@ -87,8 +88,8 @@ class NodeJsLambdaBuilderTest {
         sut.verifyPathMappings(
             projectRule.module, actualMappings,
             listOf(
-                PathMapping(buildDir.resolve(logicalId).toString(), "/var/task"),
-                PathMapping(codeUri.toString(), "/var/task")
+                PathMapping(buildDir.resolve(logicalId).toString(), LambdaBuilder.TASK_PATH),
+                PathMapping(codeUri.toString(), LambdaBuilder.TASK_PATH)
             )
         )
     }
