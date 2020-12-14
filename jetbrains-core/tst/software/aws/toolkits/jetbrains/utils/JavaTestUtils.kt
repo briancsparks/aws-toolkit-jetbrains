@@ -29,8 +29,6 @@ import com.intellij.psi.PsiJavaFile
 import com.intellij.testFramework.IdeaTestUtil
 import com.intellij.testFramework.runInEdtAndWait
 import com.intellij.util.io.isDirectory
-import com.intellij.util.io.readBytes
-import com.intellij.util.io.write
 import com.intellij.xdebugger.XDebuggerUtil
 import org.jetbrains.idea.maven.project.MavenProjectsManager
 import org.jetbrains.plugins.gradle.settings.GradleProjectSettings
@@ -81,16 +79,11 @@ fun HeavyJavaCodeInsightTestFixtureRule.setUpGradleProject(compatibility: String
             
             sourceCompatibility = '$compatibility'
             targetCompatibility = '$compatibility'
-
-            dependencies {
-                compile 'com.amazonaws:aws-lambda-java-core:1.2.0'
-                testImplementation 'junit:junit:4.12'
-            }
         """.trimIndent()
     ).virtualFile
 
     // Use our project's own Gradle version
-    copyGradleFiles(this)
+    this.copyGradleFiles()
 
     val lambdaClass = fixture.addClass(
         """
@@ -172,34 +165,33 @@ fun HeavyJavaCodeInsightTestFixtureRule.addBreakpoint() {
     }
 }
 
-private fun copyGradleFiles(fixtureRule: HeavyJavaCodeInsightTestFixtureRule) {
+private fun HeavyJavaCodeInsightTestFixtureRule.copyGradleFiles() {
     val gradleRoot = findGradlew()
     val gradleFiles = setOf("gradle/", "gradlew.bat", "gradlew")
 
     gradleFiles.forEach {
         val gradleFile = gradleRoot.resolve(it)
         if (gradleFile.exists()) {
-            copyPath(fixtureRule, gradleRoot, gradleFile)
+            copyPath(gradleRoot, gradleFile)
         } else {
             throw IllegalStateException("Failed to locate $it")
         }
     }
 }
 
-private fun copyPath(fixtureRule: HeavyJavaCodeInsightTestFixtureRule, root: Path, path: Path) {
+private fun HeavyJavaCodeInsightTestFixtureRule.copyPath(root: Path, path: Path) {
     if (path.isDirectory()) {
         Files.list(path).forEach {
             // Skip over files like .DS_Store. No gradlew related files start with a "." so safe to skip
             if (it.fileName.toString().startsWith(".")) {
                 return@forEach
             }
-            copyPath(fixtureRule, root, it)
+            this@copyPath.copyPath(root, it)
         }
     } else {
-        fixtureRule.fixture.addFileToModule(fixtureRule.module, root.relativize(path).toString(), "").also { newFile ->
-            val newPath = Paths.get(newFile.virtualFile.path)
-            newPath.write(path.readBytes())
+        fixture.addFileToModule(module, root.relativize(path).toString(), path.toFile().readText()).also { newFile ->
             if (SystemInfo.isUnix) {
+                val newPath = Paths.get(newFile.virtualFile.path)
                 Files.setPosixFilePermissions(newPath, Files.getPosixFilePermissions(path))
             }
         }
